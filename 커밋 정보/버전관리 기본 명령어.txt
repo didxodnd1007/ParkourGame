@@ -1,6 +1,8 @@
 로컬 저장소(MyComputer) 원격(Remote) 상황별 가이드
 
-
+[옵션]
+git commit
+-am // git add *와 커밋을 같이 진행함
 
 [push를 하기 위한 기본 명령어]
 시작은 무조건 git 붙이고 시작
