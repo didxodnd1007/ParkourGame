@@ -2,10 +2,11 @@
 
 
 
-[기본 명령어]
+[push를 하기 위한 기본 명령어]
 시작은 무조건 git 붙이고 시작
-git add * (파일명) // 
-git commit
+git add *(전체) 또는 a.txt(파일명) // 스테이어 에이리아에 집어넣기
+git commit -m "Text" // 로컬저장소 커밋하기
+git push -u origin master(브랜치 경로)
 
 
 [시나리오] 
@@ -13,6 +14,14 @@ o = 작업간 변동
 x = 변동 없음
 
 로컬	원격
-o	x
-x	o
-o	o
+o	x	git push -u origin master
+x	o	git pull
+o	o	
+
+
+
+[오류]
+Already up to date (pull 오류)
+$ git fetch --all 
+$ git reset --hard origin/master
+내 로컬 master를 원격/master로 강제 리셋 시키는 방법
