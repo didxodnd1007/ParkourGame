@@ -11,6 +11,15 @@ git commit -m "Text" // 로컬저장소 커밋하기
 git push -u origin master(브랜치 경로)
 
 
+
+[Branch 기본 사용법]
+git branch = 현재 프로젝트 브랜치 조회
+git checkout = 해당 브랜치로 이동
+git merge <합칠 브랜치>
+(예를들어 1번 브랜치에서 작업을 했고 해당 내용을 마스터 브랜치에 합칠려고 하면
+마스터 브랜치에서 git merge<1번 브랜치 이름> 입력
+
+
 [시나리오] 
 o = 작업간 변동
 x = 변동 없음
