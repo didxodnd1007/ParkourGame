@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+<<<<<<< HEAD
 # Visual Studio 16
+=======
+# Visual Studio 15
+>>>>>>> 5bf6d9c92f863fb4de1d39f36e4cad37e7540981
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{63332518-CD5B-F0B5-8D01-3EE1E19D77CE}"
 EndProject
 Global
