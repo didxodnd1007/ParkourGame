@@ -36,6 +36,7 @@ public class Player : MonoBehaviour
         if (playerAni.GetCurrentAnimatorStateInfo(0).IsName("Turn") && playerAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
         {
             playerAni.SetBool("Turn", false);
+            speed = 2.5f;
         }
     }
 
@@ -69,6 +70,7 @@ public class Player : MonoBehaviour
         {
             prevMvPos = (int)mvPos.x;
             playerAni.SetBool("Turn", true);
+            speed = 1f;
         }
 
         this.transform.Translate(mvPos * speed * Time.deltaTime);
