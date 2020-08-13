@@ -29,14 +29,13 @@ public class Enamy : MonoBehaviour
         Vector3 dir = Player.transform.position - eye.transform.position;
         if (Vector3.Distance(Player.transform.position, transform.position) <= 10)
         {
-            Debug.Log("거리안에 들어옴");
+            //Debug.Log("거리안에 들어옴");
             // Debug.Log(Vector3.Angle(dir, eye.transform.right));
             if (Vector3.Angle(dir, eye.transform.right) <= angle * 0.5f)
             {
-                Debug.Log("시야각안에 들어옴");
+                //Debug.Log("시야각안에 들어옴");
                 RaycastHit2D hit = Physics2D.Raycast(eye.transform.position, dir, 10, layer);
                 Debug.DrawRay(eye.transform.position, dir, Color.red);
-                Debug.Log(hit.transform.name);
                 if (hit.transform.gameObject.tag == "Player")
                 {
                     Playeron = true;
@@ -99,12 +98,12 @@ public class Enamy : MonoBehaviour
         if (z < 180&& z > 0)
         {
             eye.transform.rotation = Quaternion.Euler(0, 180, 0);
-            Debug.Log(z);
+            //Debug.Log(z);
         }
         if (z > -180&& z < 0)
         {
             eye.transform.rotation = Quaternion.Euler(0, 0, 0);
-            Debug.Log(z);
+            //Debug.Log(z);
         }
     }
 }
