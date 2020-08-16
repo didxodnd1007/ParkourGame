@@ -173,7 +173,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bb81aea6862a7f419edde89d911784b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2.5
+  speed: 0
+  jumpScale: 0
   playerAni: {fileID: 709875035}
   playerTop: {fileID: 1919532866}
   playerFoot: {fileID: 0}

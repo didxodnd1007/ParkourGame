@@ -12,12 +12,20 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float speed;
     [SerializeField]
+    private float jumpScale;
+    [SerializeField]
     private Animator playerAni;
     [Header("Pivot")]
     [SerializeField]
     private Transform playerTop;
     [SerializeField]
     private Transform playerFoot;
+    [Range(0, 1)]
+    [SerializeField]
+    private float climpAniSec;
+    [SerializeField]
+    private Vector2 climpMovePivot;
+
 
 
     static public Player S; // SingleTon
@@ -43,12 +51,6 @@ public class Player : MonoBehaviour
     {
         KeyInput();
         AnimatorChecking();
-
-        if (playerAni.GetCurrentAnimatorStateInfo(0).IsName("Turn") && playerAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
-        {
-            playerAni.SetBool("Turn", false);
-            mvSpeed = speed;
-        }
     }
 
     private void FixedUpdate()
@@ -58,47 +60,80 @@ public class Player : MonoBehaviour
 
     public void KeyInput()
     {
-        if (Input.GetKey(KeyCode.D)) // 앞으로
+        if (plState != PLAYER_STATE.CLIMP)
         {
-            plState = PLAYER_STATE.MOVE;
-            Moving(-1f);
-        }
-        else if (Input.GetKey(KeyCode.A)) // 뒤로
-        {
-            plState = PLAYER_STATE.MOVE;
-            Moving(1f);
-        }
-        else // 가만히
-        {
-            plState = PLAYER_STATE.IDLE;
-            prevMvPos = 0;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space)) // 점프
-        {
-            if (plState != PLAYER_STATE.JUMP)
+            if (Input.GetKey(KeyCode.D)) // 앞으로
             {
-                int layerMask = 1 << LayerMask.NameToLayer("Player"); // 플레이어를 제외한 나머지 레이어 마스크
-                layerMask = ~layerMask;
+                plState = PLAYER_STATE.MOVE;
+                Moving(-1f);
+            }
+            else if (Input.GetKey(KeyCode.A)) // 뒤로
+            {
+                plState = PLAYER_STATE.MOVE;
+                Moving(1f);
+            }
+            else // 가만히
+            {
+                plState = PLAYER_STATE.IDLE;
+                prevMvPos = 0;
+            }
 
-                ray2D.origin = this.transform.position;
-                //Debug.Log(playerFoot.position);
-                Debug.Log(ray2D.origin);
-
-                Debug.DrawRay(ray2D.origin, Vector2.down, Color.red, 30f);
-
-                hit2D = Physics2D.Raycast(ray2D.origin, Vector2.down,1f,layerMask);
-                Debug.Log(hit2D.collider.gameObject);
-
-                if (hit2D) // 아래를 검사했을 때 땅이면 점프
+            if (Input.GetKeyDown(KeyCode.Space)) // 점프
+            {
+                if (plState != PLAYER_STATE.JUMP)
                 {
-                    Debug.Log("Hiru");
-                    if (hit2D.collider.tag == "Ground")
+                    int layerMask = 1 << LayerMask.NameToLayer("Player"); // 플레이어를 제외한 나머지 레이어 마스크
+                    layerMask = ~layerMask;
+
+                    ray2D.origin = this.transform.position;
+                    //Debug.Log(playerFoot.position);
+                    Debug.Log(ray2D.origin);
+
+                    Debug.DrawRay(ray2D.origin, Vector2.down, Color.red, 2f);
+
+                    hit2D = Physics2D.Raycast(ray2D.origin, Vector2.down, 1f, layerMask);
+                    Debug.Log(hit2D.collider.gameObject);
+
+                    if (hit2D) // 아래를 검사했을 때 땅이면 점프
                     {
-                        Jumping();
-                        plState = PLAYER_STATE.JUMP;
+                        if (hit2D.collider.tag == "Ground")
+                        {
+                            Jumping();
+                            plState = PLAYER_STATE.JUMP;
+                        }
                     }
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.W)) // 올라가기(이동중이면 불가<점프중 가능>)
+            {
+                if (plState != PLAYER_STATE.MOVE)
+                {
+                    Ray2D topRay = new Ray2D();
+                    RaycastHit2D topRayHit;
+                    int layerMask = 1 << LayerMask.NameToLayer("Wall"); // 벽를 제외한 나머지 레이어 마스크
+                    ray2D.origin = this.transform.position;
+                    topRay.origin = playerTop.transform.position;
+
+                    Debug.DrawRay(ray2D.origin, new Vector2(1, -0.5f), Color.blue, 2f);
+                    Debug.DrawRay(topRay.origin, Vector2.right, Color.blue, 2f);
+
+                    hit2D = Physics2D.Raycast(ray2D.origin, new Vector2(1, -0.5f), 1f, layerMask);
+                    //Debug.Log(hit2D.collider.gameObject);
+
+                    topRayHit = Physics2D.Raycast(topRay.origin, Vector2.right, 1f, layerMask);
+                    //Debug.Log(topRayHit.collider.gameObject);
+
+                    if (hit2D.collider != null && topRayHit.collider == null)
+                    {
+                        if (hit2D.collider.tag == "Ground")
+                            StartCoroutine(Climbing());
+                    }
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+
             }
         }
     }
@@ -112,7 +147,7 @@ public class Player : MonoBehaviour
         {
             prevMvPos = (int)mvPos.x;
         }
-         else // 방향전환
+        else // 방향전환
         {
             prevMvPos = (int)mvPos.x;
             playerAni.SetBool("Turn", true);
@@ -125,12 +160,35 @@ public class Player : MonoBehaviour
 
     public void Jumping()
     {
-        Debug.Log("Jumping!!");
+        GetComponent<Rigidbody2D>().AddForce(Vector2.up*jumpScale, ForceMode2D.Impulse);
     }
 
-    public void Climbing()
+    public IEnumerator Climbing()
     {
+        plState = PLAYER_STATE.CLIMP;
+        this.GetComponent<Rigidbody2D>().gravityScale = 0; // 오르는 중에는 중력의 영향을 받지 않음
+        Vector2 nowPos = (Vector2)this.transform.position;
+        Vector2 endPos = (Vector2)this.transform.position + climpMovePivot;
 
+        float endXpos = endPos.x;
+        float endYpos = endPos.y;
+
+        while(true)
+        {
+            nowPos = Vector2.Lerp(nowPos, endPos, 0.3f);
+            if (Vector2.Distance(nowPos, endPos) <= 0.01f) // 차이가 0.1f정도 차이날 때 빠져나가고 코루틴 정지
+            {
+                this.transform.position = endPos;
+                break;
+            }
+
+            this.transform.position = nowPos;
+            yield return new WaitForSeconds(0.03f);
+        }
+
+        this.GetComponent<Rigidbody2D>().gravityScale = 1;
+        plState = PLAYER_STATE.IDLE; // 플레이어를 아무 행동을 안하는 상태로 변경
+        yield return null;
     }
 
 
@@ -145,6 +203,10 @@ public class Player : MonoBehaviour
             case PLAYER_STATE.IDLE:
                 playerAni.SetBool("Move", false);
                 break;
+            case PLAYER_STATE.CLIMP:
+                this.transform.localScale = new Vector2(-1, 1);
+                playerAni.SetBool("Climp", true);
+                break;
             default:
                 break;
         }
@@ -153,6 +215,11 @@ public class Player : MonoBehaviour
         {
             playerAni.SetBool("Turn", false);
             mvSpeed = speed;
+        }
+
+        if (playerAni.GetCurrentAnimatorStateInfo(0).IsName("Climp") && playerAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
+        {
+            playerAni.SetBool("Climp", false);
         }
     }
 }
