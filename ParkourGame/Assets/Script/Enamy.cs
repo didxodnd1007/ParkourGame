@@ -9,16 +9,20 @@ public class Enamy : MonoBehaviour
     public GameObject eye;
     public GameObject Player;
     public LayerMask layer;
-    public Transform a, b;
-    public Transform target;
-    public Transform Previoustarget;
+    public Vector3 a, b;
+    public Vector3 target;
+    public Vector3 Previoustarget;
     public float z ;
     public float speed;
     public bool Playeron;
     public bool set;
+    bool move;
+    Animator anim;
     // Start is called before the first frame update
     void Start()
     {
+        anim = GetComponent<Animator>();
+        move = true;
         target = b;
         Previoustarget = a;
     }
@@ -41,9 +45,9 @@ public class Enamy : MonoBehaviour
                     Playeron = true;
                     set = false;
                     Previoustarget = target;
-                    target = null;
+                   
 
-                    target = Player.transform;
+                    target = Player.transform.position;
                 }
 
 
@@ -54,9 +58,11 @@ public class Enamy : MonoBehaviour
         {
             Playeron = false;
         }
-       
 
-        transform.position = Vector2.MoveTowards(transform.position,new Vector2(target.position.x,transform.position.y),speed*Time.deltaTime);        
+        if (move)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, new Vector2(target.x, transform.position.y), speed * Time.deltaTime);
+        }       
         if (Playeron==false)
         {
             if (set == false)
@@ -65,14 +71,18 @@ public class Enamy : MonoBehaviour
                 target = b;
                 Previoustarget = a;
             }
-            if (transform.position == new Vector3(b.position.x, transform.position.y))
+            if (transform.position == new Vector3(b.x, transform.position.y))
             {
+                move = false;
+                anim.SetBool("Turn", true);
                 target = a;
                 Previoustarget = b;
                 //eye.transform.rotation = Quaternion.Euler(0, 180, 0);
             }
-            if (transform.position == new Vector3(a.position.x, transform.position.y))
+            if (transform.position == new Vector3(a.x, transform.position.y))
             {
+                move = false;
+                anim.SetBool("Turn", true);
                 target = b;
                 Previoustarget = a;
                 //eye.transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -88,9 +98,9 @@ public class Enamy : MonoBehaviour
         Handles.color = new Color(1,1,1,0.2f);
         Handles.DrawSolidArc(eye.transform.position, Vector3.forward, dir, angle, 10);
     }
-    void EnamyRotation(Transform target)
+    void EnamyRotation(Vector3 target)
     {
-        Vector2 Position = new Vector2(target.position.x, target.position.y);
+        Vector2 Position = new Vector2(target.x, target.y);
         Vector2 direction = new Vector2(transform.position.x, transform.position.y) - Position;
         float Rotation = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
       
@@ -98,12 +108,27 @@ public class Enamy : MonoBehaviour
         if (z < 180&& z > 0)
         {
             eye.transform.rotation = Quaternion.Euler(0, 180, 0);
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Turn R") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+              
+            }
             //Debug.Log(z);
         }
         if (z > -180&& z < 0)
         {
             eye.transform.rotation = Quaternion.Euler(0, 0, 0);
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Turn R") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+
+            }
             //Debug.Log(z);
+        }
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Turn R") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
+        {
+            move = true;
+            anim.SetBool("Turn", false);
         }
     }
 }
