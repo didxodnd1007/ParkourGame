@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 7260184941889367778}
   - component: {fileID: 7260184941889367779}
   - component: {fileID: 7260184941889367788}
+  - component: {fileID: 589186291513135596}
   - component: {fileID: 4032266450233628839}
   - component: {fileID: 709875035}
   m_Layer: 8
@@ -161,6 +162,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.8363295, y: 1.7213258}
   m_EdgeRadius: 0
+--- !u!114 &589186291513135596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7260184941889367789}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9da3e170a0342fd4993b0d1779b05bdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 0
+  jumpScale: 0
 --- !u!114 &4032266450233628839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +193,12 @@ MonoBehaviour:
   playerAni: {fileID: 709875035}
   playerTop: {fileID: 1919532866}
   playerFoot: {fileID: 0}
+  climpAniSec: 0
+  climpMovePivot: {x: 0, y: 0}
+  climpStartSprite: {fileID: 0}
+  idleSprite: {fileID: 0}
+  jumpSprite: {fileID: 0}
+  jumpSpriteStay: {fileID: 0}
 --- !u!95 &709875035
 Animator:
   serializedVersion: 3

@@ -4,15 +4,35 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    private Character mainPlayer;
 
+    private Command rightArrow_;
+    private Command leftArrow_;
+    private Command idleCommand_;
+    private Command SpaceButton_;
+
+
+    private void Awake() // 나중에 키 변경할 수 있게 수정
+    {
+        rightArrow_ = new RightMoveCommand();
+        leftArrow_ = new LeftMoveCommand();
+        idleCommand_ = new IdleCommand();
+    }
     // Update is called once per frame
     void Update()
     {
-        
+        if  (Input.GetKey(KeyCode.D))
+        {
+            rightArrow_.PlayCommand(mainPlayer);
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            leftArrow_.PlayCommand(mainPlayer);
+        }
+        else // 키 입력이 없을 때
+        {
+            idleCommand_.PlayCommand(mainPlayer);
+        }
     }
 }
