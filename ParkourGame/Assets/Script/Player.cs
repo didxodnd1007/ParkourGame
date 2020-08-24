@@ -25,7 +25,14 @@ public class Player : MonoBehaviour
     private float climpAniSec;
     [SerializeField]
     private Vector2 climpMovePivot;
-
+    [SerializeField]
+    private Sprite climpStartSprite;
+    [SerializeField]
+    private Sprite idleSprite;
+    [SerializeField]
+    private Sprite jumpSprite;
+    [SerializeField]
+    private Sprite jumpSpriteStay;
 
 
     static public Player S; // SingleTon
@@ -36,6 +43,8 @@ public class Player : MonoBehaviour
     int prevMvPos = 0;
     private float turnSpeed;
     private float mvSpeed;
+    private bool jumpingChk = false;
+    private float currentSpeed;
 
     private Ray2D ray2D;
     private RaycastHit2D hit2D;
@@ -55,7 +64,17 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
+        if (plState == PLAYER_STATE.MOVE)
+        {
+            if (currentSpeed <= 1)
+            {
+                currentSpeed += 0.05f;
+            }
+        }
+        else if (plState == PLAYER_STATE.IDLE)
+        {
+            currentSpeed = 0;
+        }
     }
 
     public void KeyInput()
@@ -74,8 +93,12 @@ public class Player : MonoBehaviour
             }
             else // 가만히
             {
-                plState = PLAYER_STATE.IDLE;
-                prevMvPos = 0;
+                if (jumpingChk == false && plState != PLAYER_STATE.JUMP)
+                {
+                    plState = PLAYER_STATE.IDLE;
+                    prevMvPos = 0;
+                }
+
             }
 
             if (Input.GetKeyDown(KeyCode.Space)) // 점프
@@ -98,7 +121,7 @@ public class Player : MonoBehaviour
                     {
                         if (hit2D.collider.tag == "Ground")
                         {
-                            Jumping();
+                            StartCoroutine(Jumping());
                             plState = PLAYER_STATE.JUMP;
                         }
                     }
@@ -154,13 +177,17 @@ public class Player : MonoBehaviour
             mvSpeed = speed / 2f;
         }
 
-        this.transform.Translate(mvPos * speed * Time.deltaTime);
+        this.transform.Translate(mvPos * speed * Time.deltaTime * currentSpeed);
         this.transform.localScale = new Vector3((mvPos.x * -1), 1, 1);
     }
 
-    public void Jumping()
+    public IEnumerator Jumping()
     {
+        jumpingChk = true;
+        yield return new WaitForSeconds(0.2f);
         GetComponent<Rigidbody2D>().AddForce(Vector2.up*jumpScale, ForceMode2D.Impulse);
+        jumpingChk = false;
+        yield return null;
     }
 
     public IEnumerator Climbing()
@@ -173,21 +200,27 @@ public class Player : MonoBehaviour
         float endXpos = endPos.x;
         float endYpos = endPos.y;
 
+        this.GetComponent<SpriteRenderer>().sprite = climpStartSprite;
+        yield return new WaitForSeconds(0.2f);
+
+        MainCameraScript.SingleTon.MainFocus = null;
         while(true)
         {
-            nowPos = Vector2.Lerp(nowPos, endPos, 0.3f);
-            if (Vector2.Distance(nowPos, endPos) <= 0.01f) // 차이가 0.1f정도 차이날 때 빠져나가고 코루틴 정지
+            nowPos = Vector2.Lerp(nowPos, endPos, 0.5f);
+            if (Vector2.Distance(nowPos, endPos) <= 0.03f) // 차이가 0.1f정도 차이날 때 빠져나가고 코루틴 정지
             {
                 this.transform.position = endPos;
                 break;
             }
 
             this.transform.position = nowPos;
-            yield return new WaitForSeconds(0.03f);
+            yield return new WaitForSeconds(0.2f);
         }
 
-        this.GetComponent<Rigidbody2D>().gravityScale = 1;
+        this.GetComponent<Rigidbody2D>().gravityScale = 1f;
         plState = PLAYER_STATE.IDLE; // 플레이어를 아무 행동을 안하는 상태로 변경
+        this.GetComponent<SpriteRenderer>().sprite = idleSprite;
+        MainCameraScript.SingleTon.MainFocus = this.gameObject;
         yield return null;
     }
 
@@ -201,11 +234,20 @@ public class Player : MonoBehaviour
                 playerAni.SetBool("Move", true);
                 break;
             case PLAYER_STATE.IDLE:
+                this.GetComponent<Animator>().enabled = true;
                 playerAni.SetBool("Move", false);
+                this.GetComponent<SpriteRenderer>().sprite = idleSprite;
+                this.GetComponent<SpriteRenderer>().flipX = false;
                 break;
             case PLAYER_STATE.CLIMP:
                 this.transform.localScale = new Vector2(-1, 1);
                 playerAni.SetBool("Climp", true);
+                break;
+            case PLAYER_STATE.JUMP:
+                Debug.Log("SpriteChange");
+                this.GetComponent<Animator>().enabled = false;
+                this.GetComponent<SpriteRenderer>().sprite = jumpSprite;
+                this.GetComponent<SpriteRenderer>().flipX = true;
                 break;
             default:
                 break;
@@ -221,5 +263,34 @@ public class Player : MonoBehaviour
         {
             playerAni.SetBool("Climp", false);
         }
+    }
+
+    private float IncrementTowards(float n, float target, float a)
+    {
+        if (n == target)
+        {
+            return n;
+        }
+        else
+        {
+            //방향 Sign -> 음수 면 - 1 양수거나 0이면 1 반환
+            float dir = Mathf.Sign(target - n); // must n be increased or decreased to get closer to target
+            n += a * Time.deltaTime * dir;
+            return (dir == Mathf.Sign(target - n)) ? n : target; // if n has now passed target then return target, otherwise return n
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Hiru");
+        if (collision.gameObject.tag == "Ground")
+            StartCoroutine(downJumping());
+    }
+
+    private IEnumerator downJumping()
+    {
+        plState = PLAYER_STATE.JUMP;
+        yield return new WaitForSeconds(0.2f);
+        plState = PLAYER_STATE.IDLE;
     }
 }

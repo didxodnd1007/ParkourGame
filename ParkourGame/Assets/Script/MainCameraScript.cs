@@ -25,7 +25,12 @@ public class MainCameraScript : MonoBehaviour
         set
         {
             mainFocus = value;
-            focus = mainFocus.transform;
+            if (mainFocus != null)
+                focus = mainFocus.transform;
+            else
+            {
+                focus = null;
+            }
         }
     }
     public Transform focus = null;
