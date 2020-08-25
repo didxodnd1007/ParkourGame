@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 enum PLAYER_STATE
@@ -264,6 +265,24 @@ public class Player : MonoBehaviour
             playerAni.SetBool("Climp", false);
         }
     }
+<<<<<<< HEAD
+<<<<<<< HEAD
+    void ShowDebug(Text text)
+=======
+    void ShowDebug(Text[] text)
+>>>>>>> debugger
+    {
+        MainDebug.instance.Addstruct(0,"speed",speed);   
+        MainDebug.instance.Addstruct(1,"jumpScale", jumpScale);
+        Debug.Log(MainDebug.instance.value_name.Length);
+        for (int i=0; i < MainDebug.instance.value_name.Length; i++)
+        {
+            MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :"+MainDebug.instance.value[i];
+        }
+       // text.text = "";
+    }   
+   
+=======
 
     private float IncrementTowards(float n, float target, float a)
     {
@@ -293,4 +312,6 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         plState = PLAYER_STATE.IDLE;
     }
+>>>>>>> ed0cbfc1727b2d8a67817b7080c48db622d0758d
 }
+
