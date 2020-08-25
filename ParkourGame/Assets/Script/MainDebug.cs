@@ -6,8 +6,9 @@ using UnityEngine;
 public class MainDebug : MonoBehaviour
 {
     public GameObject target;
-    public Text DebugText;
-    public List<string> value_name = new List<string>();
+    public Text[] DebugText;
+    public GameObject debugWindow;
+    public string[] value_name ;
     public ArrayList value = new ArrayList();
    public static MainDebug instance;
     // Start is called before the first frame update
@@ -15,6 +16,7 @@ public class MainDebug : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        DebugText = debugWindow.GetComponentsInChildren<Text>();
     }
     void Start()
     {
@@ -27,30 +29,47 @@ public class MainDebug : MonoBehaviour
         Vector2 mousePosition = Input.mousePosition;
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero,0);
-        Debug.Log(hit.transform.gameObject.name);
+        
         if (Input.GetMouseButtonDown(0))
         {
-           
-            target = hit.transform.gameObject;
-            DebugText.text = "";
+
+            if (hit.transform.gameObject != null)
+            {
+                target = hit.transform.gameObject;
+                for (int i = 0; i < DebugText.Length; i++)
+                {
+                    DebugText[i].text = "";
+                }
+            }
         }
         target.SendMessage("ShowDebug",DebugText,SendMessageOptions.DontRequireReceiver);
        
     }
-   public void Addstruct(string name, float _value)
+   public void Addstruct(int Nu0mber,string name, float _value)
     {
-        value_name.Add(name);       
-        value.Add(_value);
 
+        value_name[Nu0mber] = name;
+        value.Insert(Nu0mber, _value);
+        
+        value.RemoveRange(Nu0mber + 1, DebugText.Length);
     }
-    public void Addstruct(string name, bool _value)
+
+
+    public void Addstruct(int Nu0mber,string name, bool _value)
     {
-        value_name.Add(name);
-        value.Add(_value);
+
+        value_name[Nu0mber] = name;
+        value.Insert(Nu0mber, _value);
+        
+        value.RemoveRange(Nu0mber + 1, DebugText.Length);
     }
-    public void Addstruct(string name, string _value)
+    public void Addstruct(int Nu0mber, string name, string _value)
     {
-        value_name.Add(name);
-        value.Add(_value);
+
+        value_name[Nu0mber] = name;
+        value.Insert(Nu0mber,_value);
+       
+        value.RemoveRange(Nu0mber + 1, DebugText.Length);
     }
+
 }
