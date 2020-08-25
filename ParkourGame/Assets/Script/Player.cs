@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 enum PLAYER_STATE
@@ -222,4 +223,16 @@ public class Player : MonoBehaviour
             playerAni.SetBool("Climp", false);
         }
     }
+    void ShowDebug(Text text)
+    {
+        MainDebug.instance.Addstruct("speed",speed);   
+        MainDebug.instance.Addstruct("jumpScale", jumpScale);
+        for (int i=0; i < MainDebug.instance.value_name.Count; i++)
+        {            
+            text.text = MainDebug.instance.value_name[i] + " :"+MainDebug.instance.value[i]+"\n";
+        }
+       // text.text = "";
+    }   
+   
 }
+

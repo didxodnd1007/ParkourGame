@@ -25,6 +25,7 @@ public class Enamy : MonoBehaviour
         move = true;
         target = b;
         Previoustarget = a;
+        anim.SetBool("walk", true);
     }
 
     // Update is called once per frame
@@ -75,6 +76,8 @@ public class Enamy : MonoBehaviour
             {
                 move = false;
                 anim.SetBool("Turn", true);
+                anim.SetBool("walk", false);
+
                 target = a;
                 Previoustarget = b;
                 //eye.transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -83,6 +86,7 @@ public class Enamy : MonoBehaviour
             {
                 move = false;
                 anim.SetBool("Turn", true);
+                anim.SetBool("walk", false);
                 target = b;
                 Previoustarget = a;
                 //eye.transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -129,6 +133,7 @@ public class Enamy : MonoBehaviour
         {
             move = true;
             anim.SetBool("Turn", false);
+            anim.SetBool("walk", true);
         }
     }
 }

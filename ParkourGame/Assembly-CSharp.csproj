@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\Script\Enamy.cs" />
     <Compile Include="Assets\Script\MainCameraScript.cs" />
+    <Compile Include="Assets\Script\MainDebug.cs" />
     <Compile Include="Assets\Script\Player.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/game project/ParkourGame/ParkourGame/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
