@@ -266,13 +266,18 @@ public class Player : MonoBehaviour
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     void ShowDebug(Text text)
+=======
+    void ShowDebug(Text[] text)
+>>>>>>> debugger
     {
-        MainDebug.instance.Addstruct("speed",speed);   
-        MainDebug.instance.Addstruct("jumpScale", jumpScale);
-        for (int i=0; i < MainDebug.instance.value_name.Count; i++)
-        {            
-            text.text = MainDebug.instance.value_name[i] + " :"+MainDebug.instance.value[i]+"\n";
+        MainDebug.instance.Addstruct(0,"speed",speed);   
+        MainDebug.instance.Addstruct(1,"jumpScale", jumpScale);
+        Debug.Log(MainDebug.instance.value_name.Length);
+        for (int i=0; i < MainDebug.instance.value_name.Length; i++)
+        {
+            MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :"+MainDebug.instance.value[i];
         }
        // text.text = "";
     }   
