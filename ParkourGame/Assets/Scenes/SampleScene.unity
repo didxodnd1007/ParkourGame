@@ -373,6 +373,11 @@ PrefabInstance:
       propertyPath: characterAni
       value: 
       objectReference: {fileID: 433904424}
+    - target: {fileID: 8769831467208984186, guid: a66d08ca1d76fde4198617ed87640187,
+        type: 3}
+      propertyPath: jumpScale
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a66d08ca1d76fde4198617ed87640187, type: 3}
 --- !u!1 &169521641

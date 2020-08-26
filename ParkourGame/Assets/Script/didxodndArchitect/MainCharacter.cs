@@ -23,6 +23,11 @@ public class MainCharacter : Character
     private int prevMoveDir; // 이전 이동 방향
     private float currentSpeed = 0; // 가속도
     private float mvSpeed;
+    private float timeFlow = 0f;
+
+    private Ray2D ray2D;
+    private RaycastHit2D hit2D;
+    private GameObject touchObj;
 
     public override void OnAwake()
     {
@@ -38,7 +43,7 @@ public class MainCharacter : Character
 
     private void Update()
     {
-        switch(plState)
+        switch (plState)
         {
             case MainCharacterState.IDLE:
                 Idle();
@@ -47,7 +52,8 @@ public class MainCharacter : Character
                 Moving(); // 물리 이동
                 break;
             case MainCharacterState.JUMP:
-                Jump();
+                timeFlow += Time.deltaTime;
+                JumpUpdate(); // 최종 검사
                 break;
         }
         AnimatorChecking(); // 애니메이션 검사 (테스트)
@@ -55,7 +61,7 @@ public class MainCharacter : Character
 
 
 
-    public override void Move(float dir)
+    public override void Move(float dir) // 이동코드 인풋
     {
         if (plState == MainCharacterState.IDLE || plState == MainCharacterState.MOVE)
         {
@@ -82,17 +88,46 @@ public class MainCharacter : Character
             currentSpeed += 0.02f;
         }
 
-        this.transform.Translate(new Vector2(moveDir,0) * mvSpeed * Time.deltaTime * currentSpeed);
+        this.transform.Translate(new Vector2(moveDir, 0) * mvSpeed * Time.deltaTime * currentSpeed);
         this.transform.localScale = new Vector3(moveDir, 1, 1);
     }
 
     public override void Jump()
     {
+        if (plState != MainCharacterState.JUMP)
+        {
+            GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpScale, ForceMode2D.Impulse);
+            plState = MainCharacterState.JUMP;
+        }
+    }
 
+    public void JumpUpdate()
+    {
+        int layerMask = 1 << LayerMask.NameToLayer("Player"); // 플레이어를 제외한 나머지 레이어 마스크
+        layerMask = ~layerMask;
+        ray2D.origin = this.transform.position;
+        //Debug.Log(playerFoot.position);
+
+        Debug.DrawRay(ray2D.origin, Vector2.down, Color.red, 1f);
+
+        hit2D = Physics2D.Raycast(ray2D.origin, Vector2.down, 1f, layerMask);
+        Debug.Log(hit2D);
+
+        if (hit2D && timeFlow >= 1f)
+        {
+            timeFlow = 0;
+            if (hit2D.collider.tag == "Ground")
+                plState = MainCharacterState.IDLE;
+        }
+
+        // 플레이어가 땅에 닿았을 경우 IDLE 상태로 돌아감
     }
 
     public override void Idle()
     {
+        if (plState == MainCharacterState.JUMP)
+            return;
+
         // 플레이어 움직임이 멈추고 가만히 있을 때 초기화 되야하는 변수
         plState = MainCharacterState.IDLE;
         moveDir = 0;
@@ -115,20 +150,28 @@ public class MainCharacter : Character
             characterAni.SetBool("Turn", false);
             mvSpeed = speed;
         }
-        
+
     }
     public override void ShowDebug()
-    {      
+    {
         MainDebug.instance.Addstruct<float>(0, "speed", speed);
         MainDebug.instance.Addstruct<float>(1, "jumpScale", jumpScale);
         MainDebug.instance.Addstruct<Vector2>(2, "position", transform.position);
         MainDebug.instance.Addstruct<Sprite>(3, "Sprite", gameObject.GetComponent<SpriteRenderer>().sprite);
-        MainDebug.instance.Addstruct<MainCharacterState>(3, "MainCharacterState plState",  plState);
+        MainDebug.instance.Addstruct<MainCharacterState>(3, "MainCharacterState plState", plState);
         Debug.Log(MainDebug.instance.value_name.Length);
-       /* for (int i = 0; i < MainDebug.instance.value_name.Length; i++)
-        {
-            MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :" + MainDebug.instance.bool_value[i] + MainDebug.instance.float_value[i] + MainDebug.instance.string_value[i];
-        }*/
+        /* for (int i = 0; i < MainDebug.instance.value_name.Length; i++)
+         {
+             MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :" + MainDebug.instance.bool_value[i] + MainDebug.instance.float_value[i] + MainDebug.instance.string_value[i];
+         }*/
 
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+
+    }
+
+
 }
+
