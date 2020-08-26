@@ -27,4 +27,5 @@ public abstract class Character : MonoBehaviour
     public abstract void Move(float dir = 0);
     public abstract void Jump();
     public abstract void Idle();
+    public abstract void ShowDebug();
 }

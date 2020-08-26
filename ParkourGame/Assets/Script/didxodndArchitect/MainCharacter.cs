@@ -150,6 +150,21 @@ public class MainCharacter : Character
             characterAni.SetBool("Turn", false);
             mvSpeed = speed;
         }
+        
+    }
+    public override void ShowDebug()
+    {      
+        MainDebug.instance.Addstruct<float>(0, "speed", speed);
+        MainDebug.instance.Addstruct<float>(1, "jumpScale", jumpScale);
+        MainDebug.instance.Addstruct<Vector2>(2, "position", transform.position);
+        MainDebug.instance.Addstruct<Sprite>(3, "Sprite", gameObject.GetComponent<SpriteRenderer>().sprite);
+        MainDebug.instance.Addstruct<MainCharacterState>(3, "MainCharacterState plState",  plState);
+        Debug.Log(MainDebug.instance.value_name.Length);
+       /* for (int i = 0; i < MainDebug.instance.value_name.Length; i++)
+        {
+            MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :" + MainDebug.instance.bool_value[i] + MainDebug.instance.float_value[i] + MainDebug.instance.string_value[i];
+        }*/
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

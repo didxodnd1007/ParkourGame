@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Object_did\Player\sp.cs" />
+    <Compile Include="Assets\Script\debug.cs" />
     <Compile Include="Assets\Script\didxodndArchitect\Character.cs" />
     <Compile Include="Assets\Script\didxodndArchitect\Command.cs" />
     <Compile Include="Assets\Script\didxodndArchitect\MainCharacter.cs" />
