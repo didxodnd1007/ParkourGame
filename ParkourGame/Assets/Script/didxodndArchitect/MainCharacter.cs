@@ -17,6 +17,12 @@ public class MainCharacter : Character
     [SerializeField]
     private Animator characterAni;
 
+    [Header("PlayerSprite")]
+    [SerializeField]
+    private Sprite jumpSprite;
+    [SerializeField]
+    private Sprite idleSprite;
+
     //======================================================================================
     MainCharacterState plState; // 플레이어 현재 상태 FSM 적용 예정
     private float moveDir = 0; // 이동 방향
@@ -96,6 +102,8 @@ public class MainCharacter : Character
     {
         if (plState != MainCharacterState.JUMP)
         {
+            this.GetComponent<Animation>().enabled = false;
+            this.GetComponent<SpriteRenderer>().sprite = jumpSprite;
             GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpScale, ForceMode2D.Impulse);
             plState = MainCharacterState.JUMP;
         }
@@ -125,8 +133,11 @@ public class MainCharacter : Character
 
     public override void Idle()
     {
-        if (plState == MainCharacterState.JUMP)
-            return;
+       switch(plState)
+        {
+            case MainCharacterState.JUMP:
+                return;
+        }
 
         // 플레이어 움직임이 멈추고 가만히 있을 때 초기화 되야하는 변수
         plState = MainCharacterState.IDLE;
