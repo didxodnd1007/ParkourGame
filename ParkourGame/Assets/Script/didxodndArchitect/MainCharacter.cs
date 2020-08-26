@@ -23,6 +23,11 @@ public class MainCharacter : Character
     private int prevMoveDir; // 이전 이동 방향
     private float currentSpeed = 0; // 가속도
     private float mvSpeed;
+    private float timeFlow = 0f;
+
+    private Ray2D ray2D;
+    private RaycastHit2D hit2D;
+    private GameObject touchObj;
 
     public override void OnAwake()
     {
@@ -47,7 +52,8 @@ public class MainCharacter : Character
                 Moving(); // 물리 이동
                 break;
             case MainCharacterState.JUMP:
-                Jump();
+                timeFlow += Time.deltaTime;
+                JumpUpdate(); // 최종 검사
                 break;
         }
         AnimatorChecking(); // 애니메이션 검사 (테스트)
@@ -55,7 +61,7 @@ public class MainCharacter : Character
 
 
 
-    public override void Move(float dir)
+    public override void Move(float dir) // 이동코드 인풋
     {
         if (plState == MainCharacterState.IDLE || plState == MainCharacterState.MOVE)
         {
@@ -88,11 +94,40 @@ public class MainCharacter : Character
 
     public override void Jump()
     {
+        if (plState != MainCharacterState.JUMP)
+        {
+            GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpScale, ForceMode2D.Impulse);
+            plState = MainCharacterState.JUMP;
+        }
+    }
 
+    public void JumpUpdate()
+    {
+        int layerMask = 1 << LayerMask.NameToLayer("Player"); // 플레이어를 제외한 나머지 레이어 마스크
+        layerMask = ~layerMask;
+        ray2D.origin = this.transform.position;
+        //Debug.Log(playerFoot.position);
+
+        Debug.DrawRay(ray2D.origin, Vector2.down, Color.red, 1f);
+
+        hit2D = Physics2D.Raycast(ray2D.origin, Vector2.down, 1f, layerMask);
+        Debug.Log(hit2D);
+
+        if (hit2D && timeFlow >= 1f)
+        {
+            timeFlow = 0;
+            if (hit2D.collider.tag == "Ground")
+                plState = MainCharacterState.IDLE;
+        }
+
+        // 플레이어가 땅에 닿았을 경우 IDLE 상태로 돌아감
     }
 
     public override void Idle()
     {
+        if (plState == MainCharacterState.JUMP)
+            return;
+
         // 플레이어 움직임이 멈추고 가만히 있을 때 초기화 되야하는 변수
         plState = MainCharacterState.IDLE;
         moveDir = 0;
@@ -116,4 +151,11 @@ public class MainCharacter : Character
             mvSpeed = speed;
         }
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
+    }
+
+
 }

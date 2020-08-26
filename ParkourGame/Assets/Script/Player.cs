@@ -265,12 +265,8 @@ public class Player : MonoBehaviour
             playerAni.SetBool("Climp", false);
         }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-    void ShowDebug(Text text)
-=======
+
     void ShowDebug(Text[] text)
->>>>>>> debugger
     {
         MainDebug.instance.Addstruct(0,"speed",speed);   
         MainDebug.instance.Addstruct(1,"jumpScale", jumpScale);
@@ -281,8 +277,7 @@ public class Player : MonoBehaviour
         }
        // text.text = "";
     }   
-   
-=======
+
 
     private float IncrementTowards(float n, float target, float a)
     {
@@ -312,6 +307,5 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         plState = PLAYER_STATE.IDLE;
     }
->>>>>>> ed0cbfc1727b2d8a67817b7080c48db622d0758d
 }
 
