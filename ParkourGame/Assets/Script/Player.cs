@@ -273,7 +273,7 @@ public class Player : MonoBehaviour
         Debug.Log(MainDebug.instance.value_name.Length);
         for (int i=0; i < MainDebug.instance.value_name.Length; i++)
         {
-            MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :"+MainDebug.instance.value[i];
+            //MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :"+MainDebug.instance.value[i];
         }
        // text.text = "";
     }   
