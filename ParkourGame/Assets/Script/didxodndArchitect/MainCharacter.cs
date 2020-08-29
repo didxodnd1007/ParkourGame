@@ -15,7 +15,11 @@ public class MainCharacter : Character
     [SerializeField]
     private float jumpScale; // 점프 파워
     [SerializeField]
+    private float jumpDelay;
+    [SerializeField]
     private Animator characterAni;
+    [SerializeField]
+    private float runSpeedMagnification;
 
     [Header("PlayerSprite")]
     [SerializeField]
@@ -31,7 +35,7 @@ public class MainCharacter : Character
     private float mvSpeed;
     private float timeFlow = 0f;
     private bool runEvent = false;
-    private float runSpeedMagnification;
+    private bool jumpPowerChk;
 
     private Ray2D ray2D;
     private RaycastHit2D hit2D;
@@ -72,11 +76,17 @@ public class MainCharacter : Character
 
     public override void Run(float dir)
     {
-        if (plState != MainCharacterState.JUMP)
+        if (plState == MainCharacterState.JUMP)
             return;
         else
         {
+            moveDir = dir;
+            prevMoveDir = 0;
             characterAni.SetBool("Run", true);
+            if (plState == MainCharacterState.MOVE)
+                characterAni.SetBool("Move", false);
+            plState = MainCharacterState.RUN;
+
         }
     }
 
@@ -87,13 +97,20 @@ public class MainCharacter : Character
             currentSpeed += 0.02f;
         }
 
-        this.transform.Translate(new Vector2(moveDir, 0) * mvSpeed * Time.deltaTime * currentSpeed);
+        this.transform.Translate(new Vector2(moveDir, 0) * (mvSpeed * runSpeedMagnification) * Time.deltaTime * currentSpeed);
         this.transform.localScale = new Vector3(moveDir, 1, 1);
     }
 
     public void RunExit()
     {
-
+        characterAni.SetBool("RunStop", true);
+        mvSpeed = speed;
+        if (characterAni.GetCurrentAnimatorStateInfo(0).IsName("RunStop") && characterAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
+        {
+            characterAni.SetBool("RunStop", false);
+            characterAni.SetBool("Run", false);
+            plState = MainCharacterState.IDLE;
+        }
     }
 
     public override void Move(float dir) // 이동코드 인풋
@@ -108,6 +125,13 @@ public class MainCharacter : Character
         {
             moveDir = dir;
             Moving();
+        }
+        else if (plState == MainCharacterState.RUN)
+        {
+            moveDir = dir;
+            plState = MainCharacterState.MOVE;
+            characterAni.SetBool("Move", true); // Move 애니메이션 재생
+            characterAni.SetBool("Run", false); // Move 애니메이션 재생
         }
     }
 
@@ -147,31 +171,39 @@ public class MainCharacter : Character
             characterAni.SetBool("Jump", true);
 >>>>>>> didxodnd
             plState = MainCharacterState.JUMP;
-            GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpScale, ForceMode2D.Impulse);
         }
     }
 
     public void JumpUpdate()
     {
-        int layerMask = 1 << LayerMask.NameToLayer("Player"); // 플레이어를 제외한 나머지 레이어 마스크
-        layerMask = ~layerMask;
-        ray2D.origin = this.transform.position;
-        //Debug.Log(playerFoot.position);
-
-        Debug.DrawRay(ray2D.origin, Vector2.down, Color.red, 1f);
-
-        hit2D = Physics2D.Raycast(ray2D.origin, Vector2.down, 1f, layerMask);
-        Debug.Log(hit2D);
-
-        if (hit2D && timeFlow >= 0.5f)
+        if (jumpDelay <= timeFlow && jumpPowerChk == false) // 점프 딜레이가 끝나면 점프하게
         {
-            if (hit2D.collider.tag == "Ground")
+            GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpScale, ForceMode2D.Impulse);
+            jumpPowerChk = true;
+        }
+        else
+        {
+            int layerMask = 1 << LayerMask.NameToLayer("Player"); // 플레이어를 제외한 나머지 레이어 마스크
+            layerMask = ~layerMask;
+            ray2D.origin = this.transform.position;
+            //Debug.Log(playerFoot.position);
+
+            Debug.DrawRay(ray2D.origin, Vector2.down, Color.red, 1f);
+
+            hit2D = Physics2D.Raycast(ray2D.origin, Vector2.down, 1f, layerMask);
+            Debug.Log(hit2D);
+
+            if (hit2D && timeFlow >= jumpDelay + 0.5f)
             {
-                characterAni.SetBool("Jump", true);
-                if (characterAni.GetCurrentAnimatorStateInfo(0).IsName("Jump") && characterAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
+                if (hit2D.collider.tag == "Ground")
                 {
-                    timeFlow = 0;
-                    plState = MainCharacterState.IDLE;
+                    characterAni.SetBool("Jump", true);
+                    if (characterAni.GetCurrentAnimatorStateInfo(0).IsName("Jump") && characterAni.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
+                    {
+                        timeFlow = 0;
+                        jumpPowerChk = false;
+                        plState = MainCharacterState.IDLE;
+                    }
                 }
             }
         }
@@ -186,6 +218,9 @@ public class MainCharacter : Character
         {
             case MainCharacterState.JUMP:
                 return;
+            case MainCharacterState.RUN:
+                RunExit();
+                return;
         }
 =======
         if (plState == MainCharacterState.JUMP)
@@ -194,11 +229,11 @@ public class MainCharacter : Character
 
         // 플레이어 움직임이 멈추고 가만히 있을 때 초기화 되야하는 변수
         plState = MainCharacterState.IDLE;
-        moveDir = 0;
         characterAni.SetBool("Move", false); // 움직임 코드 빠져나감
         characterAni.SetBool("Run", false);
         currentSpeed = 0; // 가속도 스피드 초기화
         prevMoveDir = 0; // 이전 이동 초기화
+        moveDir = 0;
     }
 
     private void CharacterTurnStart()
@@ -226,6 +261,7 @@ public class MainCharacter : Character
 
 >>>>>>> didxodnd
     }
+
     public override void ShowDebug()
     {
         MainDebug.instance.Addstruct<float>(0, "speed", speed);
