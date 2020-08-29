@@ -147,6 +147,9 @@ MonoBehaviour:
   speed: 0
   jumpScale: 0
   characterAni: {fileID: 95876819523297160}
+  runSpeedMagnification: 0
+  jumpSprite: {fileID: 0}
+  idleSprite: {fileID: 0}
 --- !u!114 &2892676004894810918
 MonoBehaviour:
   m_ObjectHideFlags: 0

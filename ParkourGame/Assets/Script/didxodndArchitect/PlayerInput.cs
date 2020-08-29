@@ -47,7 +47,7 @@ public class PlayerInput : MonoBehaviour
         {
             spaceButton_.PlayCommand(mainPlayer);
         }
-        else // 키 입력이 없을 때
+        else if (!Input.anyKey)
         {
             idleCommand_.PlayCommand(mainPlayer);
         }
