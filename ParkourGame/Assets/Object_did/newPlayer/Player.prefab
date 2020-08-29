@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9da3e170a0342fd4993b0d1779b05bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   speed: 0
   jumpScale: 0
   characterAni: {fileID: 95876819523297160}
@@ -178,6 +179,11 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+=======
+  speed: 3
+  jumpScale: 5
+  characterAni: {fileID: 0}
+>>>>>>> cc43e1a1ab69e05b4d09542d39d7adeaa2bf7f1a
 --- !u!1 &8185721742993058007
 GameObject:
   m_ObjectHideFlags: 0

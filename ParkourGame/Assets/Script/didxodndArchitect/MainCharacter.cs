@@ -49,7 +49,7 @@ public class MainCharacter : Character
 
     private void Update()
     {
-        switch(plState)
+        switch (plState)
         {
             case MainCharacterState.IDLE:
                 Idle();
@@ -94,7 +94,7 @@ public class MainCharacter : Character
             currentSpeed += 0.02f;
         }
 
-        this.transform.Translate(new Vector2(moveDir,0) * mvSpeed * Time.deltaTime * currentSpeed);
+        this.transform.Translate(new Vector2(moveDir, 0) * mvSpeed * Time.deltaTime * currentSpeed);
         this.transform.localScale = new Vector3(moveDir, 1, 1);
     }
 
@@ -102,8 +102,11 @@ public class MainCharacter : Character
     {
         if (plState != MainCharacterState.JUMP)
         {
+<<<<<<< HEAD
             this.GetComponent<Animation>().enabled = false;
             this.GetComponent<SpriteRenderer>().sprite = jumpSprite;
+=======
+>>>>>>> cc43e1a1ab69e05b4d09542d39d7adeaa2bf7f1a
             GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpScale, ForceMode2D.Impulse);
             plState = MainCharacterState.JUMP;
         }
@@ -133,11 +136,16 @@ public class MainCharacter : Character
 
     public override void Idle()
     {
+<<<<<<< HEAD
        switch(plState)
         {
             case MainCharacterState.JUMP:
                 return;
         }
+=======
+        if (plState == MainCharacterState.JUMP)
+            return;
+>>>>>>> cc43e1a1ab69e05b4d09542d39d7adeaa2bf7f1a
 
         // 플레이어 움직임이 멈추고 가만히 있을 때 초기화 되야하는 변수
         plState = MainCharacterState.IDLE;
@@ -161,27 +169,32 @@ public class MainCharacter : Character
             characterAni.SetBool("Turn", false);
             mvSpeed = speed;
         }
-        
+
     }
     public override void ShowDebug()
-    {      
+    {
         MainDebug.instance.Addstruct<float>(0, "speed", speed);
         MainDebug.instance.Addstruct<float>(1, "jumpScale", jumpScale);
         MainDebug.instance.Addstruct<Vector2>(2, "position", transform.position);
         MainDebug.instance.Addstruct<Sprite>(3, "Sprite", gameObject.GetComponent<SpriteRenderer>().sprite);
-        MainDebug.instance.Addstruct<MainCharacterState>(3, "MainCharacterState plState",  plState);
+        MainDebug.instance.Addstruct<MainCharacterState>(3, "MainCharacterState plState", plState);
         Debug.Log(MainDebug.instance.value_name.Length);
-       /* for (int i = 0; i < MainDebug.instance.value_name.Length; i++)
-        {
-            MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :" + MainDebug.instance.bool_value[i] + MainDebug.instance.float_value[i] + MainDebug.instance.string_value[i];
-        }*/
+        /* for (int i = 0; i < MainDebug.instance.value_name.Length; i++)
+         {
+             MainDebug.instance.DebugText[i].text = MainDebug.instance.value_name[i] + " :" + MainDebug.instance.bool_value[i] + MainDebug.instance.float_value[i] + MainDebug.instance.string_value[i];
+         }*/
 
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> cc43e1a1ab69e05b4d09542d39d7adeaa2bf7f1a
     }
 
 
 }
+
