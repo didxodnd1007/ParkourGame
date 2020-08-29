@@ -11,6 +11,8 @@ public class PlayerInput : MonoBehaviour
     private Command leftArrow_;
     private Command idleCommand_;
     private Command spaceButton_;
+    private Command rightRunArrow_;
+    private Command leftRunArrow_;
 
     private KeyCode inputKey;
 
@@ -21,17 +23,25 @@ public class PlayerInput : MonoBehaviour
         leftArrow_ = new LeftMoveCommand();
         idleCommand_ = new IdleCommand();
         spaceButton_ = new JumpCommand();
+        rightRunArrow_ = new RightRunCommand();
+        leftRunArrow_ = new LeftRunCommand();
     }
     // Update is called once per frame
     void Update()
     {
         if  (Input.GetKey(KeyCode.D))
         {
-            rightArrow_.PlayCommand(mainPlayer);
+            if (Input.GetKey(KeyCode.LeftShift))
+                rightRunArrow_.PlayCommand(mainPlayer);
+            else
+                rightArrow_.PlayCommand(mainPlayer);
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            leftArrow_.PlayCommand(mainPlayer);
+            if (Input.GetKey(KeyCode.LeftShift))
+                leftRunArrow_.PlayCommand(mainPlayer);
+            else
+                leftArrow_.PlayCommand(mainPlayer);
         }
         else if (Input.GetKey(KeyCode.Space))
         {
