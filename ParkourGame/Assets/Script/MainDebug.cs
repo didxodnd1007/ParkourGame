@@ -58,7 +58,6 @@ public class MainDebug : MonoBehaviour
                     }
                 }
             }
-
             target.SendMessage("ShowDebug", DebugText, SendMessageOptions.DontRequireReceiver);
         }
     }
